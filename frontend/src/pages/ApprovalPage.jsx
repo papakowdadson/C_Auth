@@ -4,6 +4,7 @@ import CustomTable from "../components/customTable";
 import { useMetaMask } from "metamask-react";
 import { ethers } from "ethers";
 import { cauth } from "../contract";
+import { toast} from 'react-toastify';
 
 const ApprovalPage = () => {
     const { ethereum } = useMetaMask();
@@ -27,7 +28,7 @@ const ApprovalPage = () => {
       if (projects.length>0) {
         console.log("====================My request===========");
 
-        console.log("mydata", projects[0].id);
+        console.log("mydata", projects[0].approvalCount);
         setData(projects);
         setApproved(() =>
           projects.filter((myRequest) => myRequest.approvalCount <= 3)
@@ -52,8 +53,14 @@ const ApprovalPage = () => {
         const signer = await provider.getSigner();
       // Make Function Call
       const projects = await cauth.connect(signer).approveProject(_id);
+      toast.success("Approved", {
+        position: toast.POSITION.TOP_CENTER
+      });
       
       } catch (error) {
+        toast.error("Error occured ", {
+          position: toast.POSITION.TOP_LEFT
+        });
         console.log('Approval error',error);
       }  
     }
@@ -67,7 +74,7 @@ const ApprovalPage = () => {
       ) : data.length > 0 ? (
         <>
           <DashboardContainer>
-            <DashboardTitle>My approved Request</DashboardTitle>
+            <DashboardTitle>My approvals</DashboardTitle>
             <CustomTable data={approved} myFunction={approveProject} loading={loading} actionText={'Approve'} />
           </DashboardContainer>
         </>

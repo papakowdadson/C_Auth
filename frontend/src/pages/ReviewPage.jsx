@@ -4,6 +4,7 @@ import CustomTable from "../components/customTable";
 import { useMetaMask } from "metamask-react";
 import { ethers } from "ethers";
 import { cauth } from "../contract";
+import { toast} from 'react-toastify';
 
 
 const ReviewPage = () =>{
@@ -46,9 +47,15 @@ const ReviewPage = () =>{
           const signer = await provider.getSigner();
         // Make Function Call
         const projects = await cauth.connect(signer).reviewProject(_id);
+        toast.success("Reviewed", {
+          position: toast.POSITION.TOP_CENTER
+        });
         
         } catch (error) {
-          console.log('Approval error',error);
+          toast.error("Error occured", {
+            position: toast.POSITION.TOP_LEFT
+          });
+          console.log('Review error',error);
         }  
       }
     };
@@ -61,7 +68,7 @@ const ReviewPage = () =>{
         ) : data.length > 0 ? (
           <>
             <DashboardContainer>
-              <DashboardTitle>Review Request</DashboardTitle>
+              <DashboardTitle>My Review</DashboardTitle>
               <CustomTable data={review} myFunction={myReviewProject} loading={loading} actionText={'Review'} />
             </DashboardContainer>
           </>
