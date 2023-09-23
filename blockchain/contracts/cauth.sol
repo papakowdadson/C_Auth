@@ -95,10 +95,11 @@ contract CAuth {
 
         emit reviewProjectEvent(_projectId);
 
-        if (project.reviewCount > 3) {
+        if (project.reviewCount >= 3 && project.paid ==false) {
             // Transfer funds from the project creator to the company's wallet
             require(address(this).balance >= project.paymentAmount, "Insufficient contract balance");
             payable(project.company).transfer(project.paymentAmount);
+            project.paid = true;
         }
 
 
