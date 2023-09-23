@@ -58,10 +58,10 @@ const ApprovalPage = () => {
       });
       
       } catch (error) {
-        toast.error("Error occured ", {
+        toast.error(`${error.reason}`, {
           position: toast.POSITION.TOP_LEFT
         });
-        console.log('Approval error',error);
+        console.log('Approval error',error.reason);
       }  
     }
   };
