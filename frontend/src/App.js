@@ -10,6 +10,8 @@ import Vote from "./pages/Vote";
 import Landingpage from "./pages/LandingPage";
 import ApprovalPage from "./pages/ApprovalPage";
 import ReviewPage from "./pages/ReviewPage";
+import { ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const { status, connect, account, chainId } = useMetaMask();
@@ -24,8 +26,10 @@ function App() {
 
   if (status === "connected") return (
     
+    
       <Router>
-                  <HeadlineWraper>Connected account <strong>{account}</strong> on chain ID <strong>{chainId}</strong></HeadlineWraper>
+      <ToastContainer/>
+          <HeadlineWraper>Connected account <strong>{account}</strong> on chain ID <strong>{chainId}</strong></HeadlineWraper>
           <Routes>
             <Route path="/" element={<Landingpage/>}/>
             <Route path="/approval" element={<ApprovalPage/>}/>
@@ -47,6 +51,7 @@ function App() {
             <Vote />
             <br /><br /><br /> */}
       </Router>
+    
   )
 
   return null;

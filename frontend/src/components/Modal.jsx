@@ -4,6 +4,7 @@ import { Modal, Input, Button, Loader, Placeholder } from 'rsuite';
 import styled from 'styled-components';
 import { ethers } from "ethers";
 import { cauth } from "../contract";
+import { toast, ToastContainer } from 'react-toastify';
 
 const CustomModal = ({open,handleOpen}) => {
     const [title,setTitle] = useState('');
@@ -33,7 +34,14 @@ const CustomModal = ({open,handleOpen}) => {
                     // Make Function Call
                     await cauth.connect(signer).createProject(company, _amount,title);
                     handleOpen();
+                    reset();
+                    toast.success("Project Created !", {
+                        position: toast.POSITION.TOP_CENTER
+                      });
                 } catch (error) {
+                    toast.error("Error occured !", {
+                        position: toast.POSITION.TOP_LEFT
+                      });                
                     console.log('My Error',error);
                 }     
             }    
