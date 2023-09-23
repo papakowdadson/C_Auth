@@ -11,7 +11,7 @@ const candidates = [
 function Vote() {
     const { ethereum } = useMetaMask();
     const [candidateAddress, setCandidateAddress] = useState("");
-
+// ....
     const vote = async () => {
         if (ethereum) {
             // Get Access to Signer
