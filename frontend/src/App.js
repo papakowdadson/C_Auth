@@ -3,10 +3,6 @@ import {styled} from 'styled-components';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import {Button} from 'rsuite'
 import './App.css';
-import AddEC from "./pages/AddEC";
-import AddVoter from "./pages/AddVoter";
-import AddCandidate from "./pages/AddCandidate";
-import Vote from "./pages/Vote";
 import Landingpage from "./pages/LandingPage";
 import ApprovalPage from "./pages/ApprovalPage";
 import ReviewPage from "./pages/ReviewPage";
@@ -58,7 +54,6 @@ function App() {
 }
 
 const CenterWrapper =  styled.div`
-border:2px solid yellow;
 position:absolute;
 left:50%;
 top:50%;

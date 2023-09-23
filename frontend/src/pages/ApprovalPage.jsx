@@ -31,7 +31,7 @@ const ApprovalPage = () => {
         console.log("mydata", projects[0].approvalCount);
         setData(projects);
         setApproved(() =>
-          projects.filter((myRequest) => myRequest.approvalCount <= 3)
+          projects.filter((myRequest) => myRequest.awarded == false)
         );
         setLoading(!loading);
       }

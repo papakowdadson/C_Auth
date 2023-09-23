@@ -27,7 +27,7 @@ const ReviewPage = () =>{
         if (projects.length>0) {
           console.log("====================My request===========");
   
-          console.log("mydata", projects[0].awarded);
+          console.log("mydata", projects[0].reviewCount);
           setData(projects);
           setReview(() =>
             projects.filter((myRequest) => myRequest.awarded == true)
