@@ -39,10 +39,10 @@ const CustomModal = ({open,handleOpen}) => {
                         position: toast.POSITION.TOP_CENTER
                       });
                 } catch (error) {
-                    toast.error("Error occured !", {
+                    toast.error(`${error.reason}`, {
                         position: toast.POSITION.TOP_LEFT
                       });                
-                    console.log('My Error',error);
+                    console.log('My Error',error.reason);
                 }     
             }    
         }
