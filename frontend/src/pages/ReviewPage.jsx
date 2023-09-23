@@ -30,7 +30,7 @@ const ReviewPage = () =>{
           console.log("mydata", projects[0].reviewCount);
           setData(projects);
           setReview(() =>
-            projects.filter((myRequest) => myRequest.awarded == true)
+            projects.filter((myRequest) => myRequest.awarded == true && myRequest.paid==false)
           );
           setLoading(!loading);
         }
