@@ -24,7 +24,7 @@ const Landingpage = () => {
         <img src={logob} alt="logo" width={82} />
       </div>
       <HeaderContainer>
-        <div>
+        <div style={{marginLeft:'35px'}}>
           <HeaderTitle>Be A Citizen</HeaderTitle>
           <HeaderTitle>Not A Spectator</HeaderTitle>
           <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
@@ -56,7 +56,7 @@ const HeaderContainer = styled.div`
   padding: 10px;
   display: grid;
   place-items: center;
-  grid-template-columns: repeat(2, minmax(300px, 1fr));
+  grid-template-columns: repeat(2, minmax(200px, 1fr));
 `;
 const HeaderTitle = styled.p`
   color: white;
@@ -66,10 +66,6 @@ const HeaderTitle = styled.p`
 
 const BackgroundImageContainer = styled.div`
   background-color: #10a7f7;
-  ${
-    "" /* left:50vw;
-right:50vw; */
-  }
   border-radius:30px;
   transform: rotate(45deg);
   width: 55rem;
@@ -77,6 +73,14 @@ right:50vw; */
   top: -450px;
   position: absolute;
   z-index: -1;
+  @media (max-width: 1100px) {
+    transform: rotate(0deg);
+  width: 100vw;
+  height: 35rem;
+  top: -285px;
+  position: absolute;
+  z-index: -1;
+    }
 `;
 
 const FeatureWrapper = styled.div`
