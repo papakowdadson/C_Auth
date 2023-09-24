@@ -273,7 +273,6 @@ describe("cauth", function () {
             // Simulate two more reviews to trigger payment
             await cauth.connect(citizen1).reviewProject(projectId);
             await cauth.connect(citizen2).reviewProject(projectId);
-        
             const user2BalanceAfter = await ethers.provider.getBalance(creator.address);
         
             const projectPaid = await cauth.projects(projectId);

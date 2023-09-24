@@ -68,7 +68,9 @@ const ApprovalPage = () => {
 
   return (
     <MyDashboard>
-      <DashboardHeading> Welcome to Approvals</DashboardHeading>
+      <DashboardHeading> Welcome to Citizen's Approval</DashboardHeading>
+      <p>Approve project to be awarded to assigned comapny</p>
+
       {loading ? (
         <p style={{ textAlign: "center", marginTop: "10px" }}>loading....</p>
       ) : data.length > 0 ? (

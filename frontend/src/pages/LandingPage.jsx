@@ -44,7 +44,7 @@ const Landingpage = () => {
         <FeatureWrapper>
           <Features title={'Create'} description={'Authorities, operators and individuals can create a project'} ><GearIcon spin style={{ fontSize: '2em' }} /></Features>
           <Features title={'Approve'} description={'The General Public is given the power to approve the awarded company'} ><FaCommentDollar size={32}/></Features>
-          <Features title={'Review'} description={'Upon Completion of project citizens Review project to process Payment'} ><FaCheckDouble size={32}/></Features>
+          <Features title={'Review'} description={'Upon completion of project, citizens Review project to process Payment'} ><FaCheckDouble size={32}/></Features>
         </FeatureWrapper>
       </FeatureContainer>
       {open&&<CustomModal open={open} handleOpen={handleOpen}/>}
