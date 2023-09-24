@@ -185,7 +185,7 @@ describe("cauth", function () {
         await expect( await cauth.connect(citizen3).reviewProject(_Id)).to.emit(cauth,"reviewProjectEvent").withArgs(_Id);
     });
 
-     it("Should review a project and transfer payment", async function () {
+     it("Should review a project and Insufficient contract balance", async function () {
     const { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company } = await loadFixture(deployVotingFixture);
 
         const paymentAmount = 1;
@@ -209,30 +209,77 @@ describe("cauth", function () {
     
         // Simulate two more reviews to trigger payment
         await cauth.connect(citizen1).reviewProject(projectId);
-        await cauth.connect(citizen2).reviewProject(projectId);
+        expect(cauth.connect(citizen2).reviewProject(projectId)).to.be.revertedWith("Insufficient contract balance");
     
         const user2BalanceAfter = await ethers.provider.getBalance(creator.address);
     
-        const projectPaid = await cauth.projects(projectId);
-        expect(projectPaid.paid).to.equal(true);
+        // const projectPaid = await cauth.projects(projectId);
+        // expect(projectPaid.paid).to.equal(true);
         // expect(user2BalanceAfter.sub(user2BalanceBefore)).to.equal(paymentAmount);
       });
 
       it('should get balance',async function(){
         const { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company } = await loadFixture(deployVotingFixture);
 
+        const balance2 = await cauth.connect(creator).getContractBalance()
+
+        expect( balance2).to.equal(0);
+    });
+    it('should get balance only owner',async function(){
+        const { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company } = await loadFixture(deployVotingFixture);
+
             const _title = '1';
             const _company = company.address;
             const _amount = 1;
+            const balance1 = await cauth.connect(creator).getContractBalance()
             await cauth.connect(creator).createProject(_company,_amount,_title);
+            await cauth.connect(creator).createProject(_company,_amount,_title);
+            await cauth.connect(creator).createProject(_company,_amount,_title);
+
             const projects = await cauth.getAllProjects();
             const _Id = projects[0].id;
         // Ensure the operator is not approved
         await cauth.connect(citizen).approveProject(_Id);
         await cauth.connect(citizen1).approveProject(_Id);
         await cauth.connect(citizen2).approveProject(_Id);
-        await expect( await cauth.connect(citizen3).reviewProject(_Id)).to.emit(cauth,"reviewProjectEvent").withArgs(_Id);
+        await cauth.connect(citizen1).reviewProject(_Id);
+
+        expect(cauth.connect(citizen1).getContractBalance()
+        ).to.be.rejectedWith('Only the owner can call this function');
     });
+
+    it("Should review a project and transfer", async function () {
+        const { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company } = await loadFixture(deployVotingFixture);
+    
+            const paymentAmount = 1;
+        
+            await cauth.connect(creator).createProject(company.address, paymentAmount, "Test Project");
+            const projects = await cauth.getAllProjects();
+            const projectId = projects[0].id;
+                // Simulate project completion by approving the project three times
+    
+            await cauth.connect(citizen).approveProject(projectId);
+        
+            await cauth.connect(citizen1).approveProject(projectId);
+            await cauth.connect(citizen2).approveProject(projectId);
+        
+            await cauth.connect(citizen).reviewProject(projectId);
+        
+            const reviewedProject = await cauth.projects(projectId);
+            expect(reviewedProject.reviewCount).to.equal(1);
+        
+            const user2BalanceBefore = await ethers.provider.getBalance(creator.address);
+        
+            // Simulate two more reviews to trigger payment
+            await cauth.connect(citizen1).reviewProject(projectId);
+            await cauth.connect(citizen2).reviewProject(projectId);
+        
+            const user2BalanceAfter = await ethers.provider.getBalance(creator.address);
+        
+            const projectPaid = await cauth.projects(projectId);
+            expect(projectPaid.paid).to.equal(true);
+            expect(user2BalanceAfter).to.lessThan(user2BalanceBefore);
+          });
 
 
   });
