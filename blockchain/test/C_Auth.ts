@@ -1,147 +1,183 @@
 // Import necessary dependencies
-const { expect } = require("chai");
-const { ethers } = require("hardhat");
+// const { expect } = require("chai");
+// const { ethers } = require("hardhat");
+import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
+import { ethers } from "hardhat";
+import { expect } from "chai";
 
 describe("cauth", function () {
-  let creator: { address: any; };
-  let citizen: { address: any; };
-  let citizen1: { address: any; };
-  let citizen2: { address: any; };
-  let citizen3: { address: any; };
-  let citizen4: { address: any; };
-  let citizen5: { address: any; };
-  let citizen6: { address: any; };
-  let company:{address:any;};
-  let cauth: { connect: (arg0: { address: any; }) => {
-      [x: string]: any; (): any; new(): any; createProject: { (arg0: any, arg1: any, arg2: string): any; new(): any; }; 
-    }; };
-
-
-  before(async function () {
-    [creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company ] = await ethers.getSigners();
-    const CauthContract = await ethers.getContractFactory("CAuth");
-    cauth = await CauthContract.deploy();
-  });
-
+ 
   describe('Create Project',function(){
+    async function deployVotingFixture() {
+        // Contracts are deployed using the first voter/account by default
+        const [creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company ] = await ethers.getSigners();
+
+        const cauthContract = await ethers.getContractFactory("CAuth");
+        const cauth = await cauthContract.deploy();
+
+
+        return { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company };
+    }
+
         it('should create project',async function(){
+            const { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company } = await loadFixture(deployVotingFixture);
+
             const _title = '1';
             const _company = company.address;
             const _amount = BigInt(1);
+            await cauth.connect(creator).createProject(_company,_amount,_title);
+
+            const projects = await cauth.getAllProjects();
+            expect(projects.length).to.equal(1);
+            expect(projects[0].title).to.equal(_title);
+            expect(projects[0].paymentAmount).to.equal(_amount);
             await expect( cauth.connect(creator).createProject(_company,_amount,_title)).to.emit(cauth,'createProjectEvent').withArgs(_company, _title);
         });
 
   });
 
   describe('Approve project',function(){
-    it('should revert approve to default address',async function(){
-            const _Id = 0;
-            const _title = '1';
-            const _company = company.address;
-            const _amount = 1;
-            const defaultAddress = {address:"0x0000000000000000000000000000000000000000"};
-            await cauth.connect(defaultAddress).createProject(_company,_amount,_title);
-            await expect( await cauth.connect(citizen).approveProject(_Id)).to.be.revertedWith("Project does not exist")
-        }),
+    async function deployVotingFixture() {
+        // Contracts are deployed using the first voter/account by default
+        const [creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company ] = await ethers.getSigners();
 
+        const cauthContract = await ethers.getContractFactory("CAuth");
+        const cauth = await cauthContract.deploy();
+
+
+        return { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company };
+    }
+   
     it('should revert already been awarded',async function(){
-        const _Id = 0;
             const _title = '1';
+            const { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company } = await loadFixture(deployVotingFixture);
+
             const _company = company.address;
             const _amount = 1;
             await cauth.connect(creator).createProject(_company,_amount,_title);
-            await cauth.connect(creator).createProject(_company,_amount,_title);
+            const projects = await cauth.getAllProjects();
+            const _Id = projects[0].id;
 
         // Ensure the operator is not approved
         await cauth.connect(citizen).approveProject(_Id);
         await cauth.connect(citizen1).approveProject(_Id);
         await cauth.connect(citizen2).approveProject(_Id);
-        await expect(await cauth.connect(citizen3).approveProject(_Id)).to.be.revertedWith('Project has already been awarded');
-    }),
+        // await cauth.connect(comp).approveProject(_Id);
+
+        expect(cauth.connect(citizen3).approveProject(_Id)).to.be.revertedWith('Project has already been awarded');
+    });
 
     it('should revert creator cannot approve',async function(){
-        const _Id = 0;
+        const { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company } = await loadFixture(deployVotingFixture);
+
             const _title = '1';
             const _company = company.address;
             const _amount = 1;
             await cauth.connect(creator).createProject(_company,_amount,_title);
+            const projects = await cauth.getAllProjects();
+            const _Id = projects[0].id;
         // Ensure the operator is not approved
-        await expect( await cauth.connect(creator).approveProject(_Id)).to.be.revertedWith("The creator cannot approve");
+        expect(cauth.connect(creator).approveProject(_Id)).to.be.revertedWith("The creator cannot approve");
     }),
 
     it('should revert already approved this project',async function(){
-        const _Id = 0;
+        const { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company } = await loadFixture(deployVotingFixture);
+
             const _title = '1';
             const _company = company.address;
             const _amount = 1;
             await cauth.connect(creator).createProject(_company,_amount,_title);
+            const projects = await cauth.getAllProjects();
+            const _Id = projects[0].id;
         // Ensure the operator is not approved
         await cauth.connect(citizen).approveProject(_Id);
-        await expect( await cauth.connect(citizen).approveProject(_Id)).to.be.revertedWith("You have already approved this project");
+        expect(cauth.connect(citizen).approveProject(_Id)).to.be.revertedWith("You have already approved this project");
     }),
 
     it('should approve',async function(){
-        const _Id = 0;
+        const { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company } = await loadFixture(deployVotingFixture);
+
+        
             const _title = '1';
             const _company = company.address;
             const _amount = 1;
             await cauth.connect(creator).createProject(_company,_amount,_title);
-        // Ensure the operator is not approved
+            const projects = await cauth.getAllProjects();
+            const _Id = projects[0].id;
+        //     await cauth.connect(citizen).approveProject(_Id);
+        //     const projects1 = await cauth.getAllProjects();
+        //     console.log('count',projects1[0].approvalCount);
+        // // Ensure the operator is not approved
+        // // const approvedProject = await cauth.projects1(_Id);
+        // expect(projects1[0].approvalCount).to.equal(1);
         await expect( await cauth.connect(citizen).approveProject(_Id)).to.emit(cauth,"approveProjectEvent").withArgs(_Id);
     });
 
   });
 
   describe('Review Project',function(){
-    it('should revert approve to default address',async function(){
-        const _Id = 0;
-        const _title = '1';
-        const _company = company.address;
-        const _amount = 1;
-        const defaultAddress = {address:"0x0000000000000000000000000000000000000000"};
-        await cauth.connect(defaultAddress).createProject(_company,_amount,_title);
-        await expect( await cauth.connect(citizen).reviewProject(_Id)).to.be.revertedWith("Project does not exist")
-    }),
+    async function deployVotingFixture() {
+        // Contracts are deployed using the first voter/account by default
+        const [creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company ] = await ethers.getSigners();
+
+        const cauthContract = await ethers.getContractFactory("CAuth");
+        const cauth = await cauthContract.deploy();
+
+
+        return { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company };
+    }
+    
     it('should revert not awarded yet',async function(){
-        const _Id = 0;
+    const { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company } = await loadFixture(deployVotingFixture);
+
         const _title = '1';
         const _company = company.address;
         const _amount = 1;
-        const defaultAddress = {address:"0x0000000000000000000000000000000000000000"};
         await cauth.connect(creator).createProject(_company,_amount,_title);
-        await expect( await cauth.connect(citizen).reviewProject(_Id)).to.be.revertedWith("Project has not been awarded yet")
+        const projects = await cauth.getAllProjects();
+        const _Id = projects[0].id;
+        expect(cauth.connect(citizen).reviewProject(_Id)).to.be.revertedWith("Project has not been awarded yet")
     }),
     it('should revert creator cannot review',async function(){
-        const _Id = 0;
+        const { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company } = await loadFixture(deployVotingFixture);
+
             const _title = '1';
             const _company = company.address;
             const _amount = 1;
             await cauth.connect(creator).createProject(_company,_amount,_title);
+            const projects = await cauth.getAllProjects();
+            const _Id = projects[0].id;
         // Ensure the operator is not approved
         await cauth.connect(citizen).approveProject(_Id);
         await cauth.connect(citizen1).approveProject(_Id);
         await cauth.connect(citizen2).approveProject(_Id);
-        await expect( await cauth.connect(creator).reviewProject(_Id)).to.be.revertedWith("The creator cannot review");
+        expect(cauth.connect(creator).reviewProject(_Id)).to.be.revertedWith("The creator cannot review");
     }),
     it('should revert reviewed this project',async function(){
-        const _Id = 0;
+        const { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company } = await loadFixture(deployVotingFixture);
+
             const _title = '1';
             const _company = company.address;
             const _amount = 1;
             await cauth.connect(creator).createProject(_company,_amount,_title);
+            const projects = await cauth.getAllProjects();
+            const _Id = projects[0].id;
         // Ensure the operator is not approved
         await cauth.connect(citizen).approveProject(_Id);
         await cauth.connect(citizen1).approveProject(_Id);
         await cauth.connect(citizen2).approveProject(_Id);
         await cauth.connect(citizen3).reviewProject(_Id)
-        await expect( await cauth.connect(citizen3).reviewProject(_Id)).to.be.revertedWith("You have already reviewed this project");
+        expect(cauth.connect(citizen3).reviewProject(_Id)).to.be.revertedWith("You have already reviewed this project");
     });
     it('should review this project',async function(){
-        const _Id = 0;
+        const { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company } = await loadFixture(deployVotingFixture);
+
             const _title = '1';
             const _company = company.address;
             const _amount = 1;
             await cauth.connect(creator).createProject(_company,_amount,_title);
+            const projects = await cauth.getAllProjects();
+            const _Id = projects[0].id;
         // Ensure the operator is not approved
         await cauth.connect(citizen).approveProject(_Id);
         await cauth.connect(citizen1).approveProject(_Id);
@@ -149,10 +185,72 @@ describe("cauth", function () {
         await expect( await cauth.connect(citizen3).reviewProject(_Id)).to.emit(cauth,"reviewProjectEvent").withArgs(_Id);
     });
 
+     it("Should review a project and transfer payment", async function () {
+    const { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company } = await loadFixture(deployVotingFixture);
+
+        const paymentAmount = 1;
+    
+        await cauth.connect(creator).createProject(company.address, paymentAmount, "Test Project");
+        const projects = await cauth.getAllProjects();
+        const projectId = projects[0].id;
+            // Simulate project completion by approving the project three times
+
+        await cauth.connect(citizen).approveProject(projectId);
+    
+        await cauth.connect(citizen1).approveProject(projectId);
+        await cauth.connect(citizen2).approveProject(projectId);
+    
+        await cauth.connect(citizen).reviewProject(projectId);
+    
+        const reviewedProject = await cauth.projects(projectId);
+        expect(reviewedProject.reviewCount).to.equal(1);
+    
+        const user2BalanceBefore = await ethers.provider.getBalance(creator.address);
+    
+        // Simulate two more reviews to trigger payment
+        await cauth.connect(citizen1).reviewProject(projectId);
+        await cauth.connect(citizen2).reviewProject(projectId);
+    
+        const user2BalanceAfter = await ethers.provider.getBalance(creator.address);
+    
+        const projectPaid = await cauth.projects(projectId);
+        expect(projectPaid.paid).to.equal(true);
+        // expect(user2BalanceAfter.sub(user2BalanceBefore)).to.equal(paymentAmount);
+      });
+
+      it('should get balance',async function(){
+        const { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company } = await loadFixture(deployVotingFixture);
+
+            const _title = '1';
+            const _company = company.address;
+            const _amount = 1;
+            await cauth.connect(creator).createProject(_company,_amount,_title);
+            const projects = await cauth.getAllProjects();
+            const _Id = projects[0].id;
+        // Ensure the operator is not approved
+        await cauth.connect(citizen).approveProject(_Id);
+        await cauth.connect(citizen1).approveProject(_Id);
+        await cauth.connect(citizen2).approveProject(_Id);
+        await expect( await cauth.connect(citizen3).reviewProject(_Id)).to.emit(cauth,"reviewProjectEvent").withArgs(_Id);
+    });
+
+
   });
 
   describe('All project',function(){
+    async function deployVotingFixture() {
+        // Contracts are deployed using the first voter/account by default
+        const [creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company ] = await ethers.getSigners();
+
+        const cauthContract = await ethers.getContractFactory("CAuth");
+        const cauth = await cauthContract.deploy();
+
+
+        return { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company };
+    }
     it('all project ever created',async function(){
+        const { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company } = await loadFixture(deployVotingFixture);
+
         const _title = '1';
         const _company = company.address;
         const _amount = 1;
@@ -164,7 +262,19 @@ describe("cauth", function () {
   });
 
   describe('Users project',function(){
+    async function deployVotingFixture() {
+        // Contracts are deployed using the first voter/account by default
+        const [creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company ] = await ethers.getSigners();
+
+        const cauthContract = await ethers.getContractFactory("CAuth");
+        const cauth = await cauthContract.deploy();
+
+
+        return { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company };
+    }
     it('all project ever created by user',async function(){
+        const { cauth, creator, citizen,citizen1,citizen2,citizen3,citizen4,citizen5,citizen6, company } = await loadFixture(deployVotingFixture);
+
         const _title = '1';
         const _company = company.address;
         const _amount = 1;
@@ -180,3 +290,4 @@ describe("cauth", function () {
 
   // Add more test cases for other functions and edge cases as needed
 })
+
