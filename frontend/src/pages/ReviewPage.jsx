@@ -62,7 +62,8 @@ const ReviewPage = () =>{
 
     return (
       <MyDashboard>
-        <DashboardHeading> Welcome to Reviews</DashboardHeading>
+        <DashboardHeading> Welcome to Citizen's Review</DashboardHeading>
+        <p>Review project to process payment if satisfied with project outcome</p>
         {loading ? (
           <p style={{ textAlign: "center", marginTop: "10px" }}>loading....</p>
         ) : data.length > 0 ? (
