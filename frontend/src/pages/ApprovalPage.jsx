@@ -9,6 +9,7 @@ import { toast} from 'react-toastify';
 const ApprovalPage = () => {
     const { ethereum } = useMetaMask();
   const [data, setData] = useState([]);
+  const [localApprovalTracker, setLocalApprovalTracker] = useState([]);
   const [approved, setApproved] = useState();
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -56,6 +57,7 @@ const ApprovalPage = () => {
       toast.success("Approved", {
         position: toast.POSITION.TOP_CENTER
       });
+      setLocalApprovalTracker(()=>[...localApprovalTracker,_id])
       
       } catch (error) {
         toast.error(`${error.reason}`, {
@@ -77,7 +79,7 @@ const ApprovalPage = () => {
         <>
           <DashboardContainer>
             <DashboardTitle>My approvals</DashboardTitle>
-            <CustomTable data={approved} myFunction={approveProject} loading={loading} actionText={'Approve'} />
+            <CustomTable data={approved} myFunction={approveProject} loading={loading} actionText={'Approve'} localTracker={localApprovalTracker} />
           </DashboardContainer>
         </>
       ) : (

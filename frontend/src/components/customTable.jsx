@@ -6,7 +6,7 @@ import "rsuite/dist/rsuite-no-reset.min.css";
 
 const { Column, HeaderCell, Cell } = Table;
 
-export default function CustomTable({ data,myFunction,loading,actionText }) {
+export default function CustomTable({ data,myFunction,loading,actionText,localTracker }) {
   const [limit, setLimit] = React.useState(10);
   const [page, setPage] = React.useState(1);
 
@@ -29,7 +29,7 @@ export default function CustomTable({ data,myFunction,loading,actionText }) {
 
   const ButtonCell = ({ rowData, dataKey, ...props }) =>(
     <Cell {...props}>
-      <Button onClick={()=>myFunction(rowData[dataKey])} appearance="primary" >{actionText=='Review'?'Review':'Approve'}</Button>
+      <Button onClick={()=>myFunction(rowData[dataKey])} appearance="primary" color={localTracker.some((item)=>item==rowData[dataKey])?"blue":'red'}>{actionText=='Review'?`${localTracker.some((item)=>item==rowData[dataKey])?'Reviewed':'Review'}`:`${localTracker.some((item)=>item==rowData[dataKey])?'Approved':'Approve'}`}</Button>
     </Cell>
   );
 
