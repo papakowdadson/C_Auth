@@ -11,6 +11,7 @@ const ReviewPage = () =>{
 
     const { ethereum } = useMetaMask();
     const [data, setData] = useState([]);
+    const [localReviewedTracker, setLocalReviewedTracker] = useState([]);
     const [review, setReview] = useState();
     const [loading, setLoading] = useState(true);
     useEffect(() => {
@@ -50,6 +51,7 @@ const ReviewPage = () =>{
         toast.success("Reviewed", {
           position: toast.POSITION.TOP_CENTER
         });
+        setLocalReviewedTracker(()=>[...localReviewedTracker,_id])
         
         } catch (error) {
           toast.error(`${error.reason}`, {
@@ -70,7 +72,7 @@ const ReviewPage = () =>{
           <>
             <DashboardContainer>
               <DashboardTitle>My Review</DashboardTitle>
-              <CustomTable data={review} myFunction={myReviewProject} loading={loading} actionText={'Review'} />
+              <CustomTable data={review} myFunction={myReviewProject} loading={loading} actionText={'Review'} localTracker={localReviewedTracker}/>
             </DashboardContainer>
           </>
         ) : (
