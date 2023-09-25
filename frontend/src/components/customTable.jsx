@@ -35,7 +35,7 @@ export default function CustomTable({ data,myFunction,loading,actionText,localTr
 
   return (
     <TableWrapper>
-      <Table height={460} data={newData} width={currentWidth} loading={loading} compact={true}>
+      <Table height={430} data={newData} width={currentWidth} loading={loading} compact={true}>
         <Column minWidth={150} flexGrow={2} align="left" fullText={true}>
           <HeaderCell>Title</HeaderCell>
           <Cell dataKey="title" />

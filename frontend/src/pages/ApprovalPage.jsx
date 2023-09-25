@@ -93,7 +93,7 @@ const ApprovalPage = () => {
 
 const MyDashboard = styled.div`
   text-align: center;
-  margin-top: 80px;
+  margin-top: 10px;
   display: flex;
   flex-direction: column;
 `;
@@ -104,6 +104,7 @@ const DashboardContainer = styled.div`
   margin-top: 10px;
   border-radius: 15px;
   padding: 10px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 `;
 
 const DashboardHeading = styled.p`
